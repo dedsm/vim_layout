@@ -8,9 +8,9 @@ call vundle#rc()
 
 
 Plugin 'gmarik/vundle'
+Plugin 'noahfrederick/vim-skeleton'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/syntastic'
-Plugin 'otommod/ZoomWin'
 Plugin 'kien/ctrlp.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-endwise'
@@ -27,10 +27,11 @@ Plugin 'flazz/vim-colorschemes'
 Plugin 'tmhedberg/matchit'
 Plugin 'mattn/emmet-vim'
 Plugin 'editorconfig/editorconfig-vim'
-Plugin 'digitaltoad/vim-jade'
-Plugin 'kchmck/vim-coffee-script'
 Plugin 'ciaranm/detectindent'
 Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'shougo/neocomplete.vim'
+Plugin 'vim-scripts/ZoomWin'
 
 filetype plugin indent on
 
@@ -81,6 +82,11 @@ set undoreload=10000 "maximum number lines to save for undo on a buffer
 
 map <leader><space> :noh<cr>
 map <leader>x :ccl<cr>
+
+" Template insertion
+nnoremap <leader>t :SkelInsert!<cr>
+
+
 nnoremap <tab> %
 vnoremap <tab> %
 
@@ -111,6 +117,37 @@ map <leader>zz %:sleep 1000m<CR>%
 " YouCompleteMe
 nnoremap <leader>gd :YcmCompleter GoTo<cr>
 let g:ycm_filepath_completion_use_working_dir = 1
+" disable python
+let g:ycm_filetype_blacklist = {
+      \ 'python' : 1,
+      \ 'tagbar' : 1,
+      \ 'qf' : 1,
+      \ 'notes' : 1,
+      \ 'markdown' : 1,
+      \ 'unite' : 1,
+      \ 'text' : 1,
+      \ 'vimwiki' : 1,
+      \ 'pandoc' : 1,
+      \ 'infolog' : 1,
+      \ 'mail' : 1
+      \}
+
+" Jedi-vim
+let g:jedi#popup_select_first = 0
+let g:jedi#show_call_signatures = 2
+
+" Neocomplete
+
+autocmd FileType python setlocal omnifunc=jedi#completions
+let g:neocomplete#enable_at_startup = 1
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#smart_auto_mappings = 0
+if !exists('g:neocomplete#force_omni_input_patterns')
+    let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_omni_input_patterns.python = '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+
 
 " Ctrl P
 let g:ctrlp_map = '<c-p>'
