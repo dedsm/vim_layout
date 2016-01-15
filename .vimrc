@@ -33,6 +33,9 @@ Plugin 'davidhalter/jedi-vim'
 Plugin 'shougo/neocomplete.vim'
 Plugin 'vim-scripts/ZoomWin'
 
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+
 filetype plugin indent on
 
 set mouse=nv
