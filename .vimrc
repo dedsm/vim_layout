@@ -3,15 +3,15 @@ filetype off
 
 set t_Co=256
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim/
+call vundle#begin()
 
 
-Plugin 'gmarik/vundle'
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'noahfrederick/vim-skeleton'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/syntastic'
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-rails'
@@ -30,10 +30,14 @@ Plugin 'editorconfig/editorconfig-vim'
 Plugin 'ciaranm/detectindent'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'davidhalter/jedi-vim'
+Plugin 'ervandew/supertab'
 Plugin 'shougo/neocomplete.vim'
 Plugin 'vim-scripts/ZoomWin'
 
+call vundle#end()
 filetype plugin indent on
+
+syntax on
 
 set mouse=nv
 set nowrap
@@ -64,7 +68,7 @@ map <F4> :ZoomWin<CR>
 " Nerdtree ignores
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let NERDTreeIgnore = ['\.pyc$']
+let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -148,6 +152,8 @@ if !exists('g:neocomplete#force_omni_input_patterns')
 endif
 let g:neocomplete#force_omni_input_patterns.python = '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
 
+"SuperTab
+let g:SuperTabDefaultCompletionType = "<c-n>"
 
 " Ctrl P
 let g:ctrlp_map = '<c-p>'
