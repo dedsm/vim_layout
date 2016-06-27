@@ -29,9 +29,7 @@ Plugin 'mattn/emmet-vim'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'ciaranm/detectindent'
 Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
-Plugin 'shougo/neocomplete.vim'
 Plugin 'vim-scripts/ZoomWin'
 
 call vundle#end()
@@ -118,39 +116,11 @@ map <C-l> <C-w>l
 
 map <leader>zz %:sleep 1000m<CR>%
 
-" YouCompleteMe
+"" YouCompleteMe
 nnoremap <leader>gd :YcmCompleter GoTo<cr>
-let g:ycm_filepath_completion_use_working_dir = 1
-" disable python
-let g:ycm_filetype_blacklist = {
-      \ 'python' : 1,
-      \ 'tagbar' : 1,
-      \ 'qf' : 1,
-      \ 'notes' : 1,
-      \ 'markdown' : 1,
-      \ 'unite' : 1,
-      \ 'text' : 1,
-      \ 'vimwiki' : 1,
-      \ 'pandoc' : 1,
-      \ 'infolog' : 1,
-      \ 'mail' : 1
-      \}
 
-" Jedi-vim
-let g:jedi#popup_select_first = 0
-let g:jedi#show_call_signatures = 2
-
-" Neocomplete
-
-autocmd FileType python setlocal omnifunc=jedi#completions
-let g:neocomplete#enable_at_startup = 1
-let g:jedi#completions_enabled = 0
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#smart_auto_mappings = 0
-if !exists('g:neocomplete#force_omni_input_patterns')
-    let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.python = '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+" make YCM use the python version of the virtualenv to do completions
+let g:ycm_python_binary_path = split(system("which python"))[0]
 
 "SuperTab
 let g:SuperTabDefaultCompletionType = "<c-n>"
@@ -194,3 +164,74 @@ autocmd FileType c,cpp,java,php,python autocmd BufWritePre <buffer> :%s/\s\+$//e
 " Show different background after 80 columns
 let &colorcolumn=join(range(81,999),",")
 highlight ColorColumn ctermbg=235 guibg=#2c2d27
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" RUNNING TESTS taken from Gary Bernhardt
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nnoremap <leader><cr> :call RunTestFile()<cr>
+nnoremap <leader>T :call RunNearestTest()<cr>
+nnoremap <leader>a :call RunTests('')<cr>
+nnoremap <leader>c :w\|:!script/features<cr>
+nnoremap <leader>w :w\|:!script/features --profile wip<cr>
+
+function! RunTestFile(...)
+    if a:0
+        let command_suffix = a:1
+    else
+        let command_suffix = ""
+    endif
+
+    " Run the tests for the previously-marked file.
+    let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|test_.\+.py\)$') != -1
+    if in_test_file
+        call SetTestFile(command_suffix)
+    elseif !exists("t:grb_test_file")
+        return
+    end
+    call RunTests(t:grb_test_file)
+endfunction
+
+function! RunNearestTest()
+    let spec_line_number = line('.')
+    call RunTestFile(":" . spec_line_number)
+endfunction
+
+function! SetTestFile(command_suffix)
+    " Set the spec file that tests will be run for.
+    let t:grb_test_file=@% . a:command_suffix
+endfunction
+
+function! RunTests(filename)
+    " Write the file and run tests for the given filename
+    if expand("%") != ""
+      :w
+    end
+    if match(a:filename, '\.feature$') != -1
+        exec ":!script/features " . a:filename
+    else
+        " First choice: project-specific test script
+        if filereadable("script/test")
+            exec ":!script/test " . a:filename
+        " Fall back to the .test-commands pipe if available, assuming someone
+        " is reading the other side and running the commands
+        elseif filewritable(".test-commands")
+          let cmd = 'rspec --color --format progress --require "~/lib/vim_rspec_formatter" --format VimFormatter --out tmp/quickfix'
+          exec ":!echo " . cmd . " " . a:filename . " > .test-commands"
+
+          " Write an empty string to block until the command completes
+          sleep 100m " milliseconds
+          :!echo > .test-commands
+          redraw!
+        " Fall back to a blocking test run with Bundler
+        elseif filereadable("Gemfile")
+            exec ":!bundle exec rspec --color " . a:filename
+        " If we see python-looking tests, assume they should be run with Nose
+        elseif strlen(glob("test/**/*.py") . glob("**/tests/**/*.py"))
+            exec "!py.test -s " . a:filename
+        " Fall back to a normal blocking test run
+        else
+            exec ":!rspec --color " . a:filename
+        end
+    end
+endfunction
