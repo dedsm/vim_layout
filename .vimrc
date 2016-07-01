@@ -32,6 +32,9 @@ Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'ervandew/supertab'
 Plugin 'vim-scripts/ZoomWin'
 
+" needs ctags installed
+Plugin 'majutsushi/tagbar'
+
 call vundle#end()
 filetype plugin indent on
 
@@ -61,6 +64,12 @@ set expandtab
 set sm
 map <F3> :NERDTreeToggle<CR>
 map <F4> :ZoomWin<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Tagbar
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+nnoremap <leader>] :TagbarToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nerdtree ignores
