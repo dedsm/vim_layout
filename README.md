@@ -1,3 +1,5 @@
+DEPRECATED -- Now I handle my dotfiles in https://github.com/dedsm/dotfiles including the vim configs
+
 vim_layout
 ==========
 
